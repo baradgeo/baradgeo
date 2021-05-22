@@ -1,0 +1,30 @@
+{
+  "name": "baradgeo_mern_app",
+  "version": "1.0.0",
+  "description": "Barad geo Blog app nade with MERN stack",
+  "main": "server.js",
+  "scripts": {
+    "server": "nodemon server.js"
+  },
+  "keywords": [
+    "Node",
+    "Mongo",
+    "express",
+    "React",
+    "Redux"
+  ],
+  "author": "Raja Barad",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "bcryptjs": "^2.4.3",
+    "config": "^3.3.6",
+    "express": "^4.17.1",
+    "express-validator": "^6.11.1",
+    "gravatar": "^1.8.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.12.10",
+    "nodemailer": "^6.6.0",
+    "uuidv4": "^6.2.8"
+  }
+}
