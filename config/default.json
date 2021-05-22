@@ -1,4 +1,0 @@
-{
-  "mongoURI": "mongodb+srv://baradgeo:System_097@cluster0.pjd02.mongodb.net/BaradGeo?retryWrites=true&w=majority",
-  "jwtSecret": "BaradGeo_097"
-}
