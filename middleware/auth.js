@@ -19,12 +19,26 @@ const getUser = (req, res) => {
   }
 };
 
-const auth = async (req, res, next) => {
+const authGuest = async (req, res, next) => {
   //Get user from token
   try {
     getUser(req, res);
     const user = await User.findById(req.user.id).select('-password');
-    if (user.role !== 'User') {
+    if (user.role !== 'Guest' && user.role !== 'User' && user.role !== 'Admin') {
+      return res.status(401).json({ msg: 'Authorization denied, Contact Adminstration' });
+    }
+    next();
+  } catch (err) {
+    res.status(401).json({ msg: 'Cannot Verify User Role' });
+  }
+};
+
+const authUser = async (req, res, next) => {
+  //Get user from token
+  try {
+    getUser(req, res);
+    const user = await User.findById(req.user.id).select('-password');
+    if (user.role !== 'User' && user.role !== 'Admin') {
       return res.status(401).json({ msg: 'Authorization denied, Contact Adminstration' });
     }
     next();
@@ -48,4 +62,4 @@ const authAdmin = async (req, res, next) => {
   }
 };
 
-module.exports = { auth, authAdmin };
+module.exports = { authAdmin, authUser, authGuest };

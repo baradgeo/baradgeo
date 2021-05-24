@@ -8,7 +8,8 @@ const UserSchema = new mongoose.Schema({
 
   role: {
     type: String,
-    default: 'User',
+    enum: ['Guest', 'User', 'Admin'],
+    default: 'Guest',
   },
   isApproved: {
     type: Boolean,
@@ -30,6 +31,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
   },
   date: {
+    type: Date,
+    default: Date.now,
+  },
+  modifiedDate: {
     type: Date,
     default: Date.now,
   },

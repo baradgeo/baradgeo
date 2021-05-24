@@ -6,13 +6,20 @@ const PostSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'user',
   },
+  isApproved: {
+    type: Boolean,
+    default: false,
+  },
   headline: {
     type: String,
     required: true,
   },
-  image: {
+  slug: {
     type: String,
+    required: true,
+    unique: true,
   },
+
   description: {
     type: String,
     required: true,
@@ -29,6 +36,10 @@ const PostSchema = new Schema({
   },
   comments: [
     {
+      user: {
+        type: Schema.Types.ObjectId,
+        ref: 'user',
+      },
       name: {
         type: String,
         required: true,
@@ -51,6 +62,10 @@ const PostSchema = new Schema({
     },
   ],
   date: {
+    type: Date,
+    default: Date.now,
+  },
+  modifiedDate: {
     type: Date,
     default: Date.now,
   },
