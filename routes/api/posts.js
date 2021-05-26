@@ -53,17 +53,14 @@ router.post(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
+    const { headline, slug, description, body, category } = req.body;
     try {
-      const user = await User.findById(req.user.id).select('-password');
-
       const newPost = new Post({
-        headline: req.body.headline,
-        slug: req.body.slug,
-        description: req.body.description,
-        body: req.body.body,
-
-        name: user.name,
-        avatar: user.avatar,
+        headline,
+        slug,
+        description,
+        body,
+        category,
         user: req.user.id,
       });
 
@@ -86,12 +83,99 @@ router.post(
   }
 );
 
+// @Route POST api/posts
+// @desc Edit post by post id
+// @access User Access
+
+router.put(
+  '/edit/:id',
+  [
+    authUser,
+    [
+      check('headline')
+        .not()
+        .isEmpty()
+        .withMessage('Headline is required')
+        .isLength({ min: 10 })
+        .withMessage('Headline should be greater than 10 character')
+        .isLength({ max: 200 })
+        .withMessage('Headline should not be greater than 200 character'),
+      check('slug')
+        .not()
+        .isEmpty()
+        .withMessage('Slug is required')
+        .isLength({ min: 10 })
+        .withMessage('Slug should be greater than 10 character')
+        .isLength({ max: 200 })
+        .withMessage('Slug should not be greater than 200 character'),
+      check('description')
+        .not()
+        .isEmpty()
+        .withMessage('Description is required')
+        .isLength({ min: 20 })
+        .withMessage('Description should be greater than 20 character')
+        .isLength({ max: 500 })
+        .withMessage('Description should not be greater than 500 character'),
+      check('body')
+        .not()
+        .isEmpty()
+        .withMessage('Body is required')
+        .isLength({ min: 100 })
+        .withMessage('Body should be greater than 100 character'),
+    ],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    try {
+      const user = await User.findById(req.user.id).select('-password');
+      let post = await Post.findById(req.params.id)
+        .select('-isApproved')
+        .populate('user', ['name', 'avatar']);
+      const { headline, slug, description, body, category } = req.body;
+      const newPost = {
+        headline,
+        slug,
+        description,
+        body,
+        category,
+      };
+
+      //See if post slug exists
+      let postSlug = await Post.findOne({ slug: newPost.slug });
+
+      if (postSlug) {
+        return res
+          .status(400)
+          .json({ errors: [{ msg: 'Post Slug already exists. Please change slug...' }] });
+      }
+
+      //Check user
+      if (user.role !== 'Admin') {
+        if (post.user._id.toString() !== req.user.id) {
+          return res.status(401).json({ msg: 'User not authorized' });
+        }
+      }
+
+      post = await Post.findOneAndUpdate({ _id: req.params.id }, newPost, { new: true });
+
+      res.json(post);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
+
 // @Route GET api/posts
 // @desc Get all posts by pagination
 // @access Public
-router.get('/:start/:limit', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const posts = await Post.find({ isApproved: true })
+      //.find(req.query)
       .sort({ modifiedDate: -1 })
       .select('-isApproved')
       .skip(parseInt(req.params.start))
@@ -110,7 +194,9 @@ router.get('/:start/:limit', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const post = await Post.findById(req.params.id)
+      .populate('user', ['name', 'avatar'])
+      .select('-isApproved');
     if (!post) {
       return res.status(404).json({ msg: 'Post not found' });
     }
@@ -302,7 +388,6 @@ router.delete('/user/comment/:id/:comment_id', authUser, async (req, res) => {
     //   .map((comment) => comment._id.toString())
     //   .indexOf(req.params.comment_id);
 
-    console.log(removeIndex, post.comments);
     post.comments.splice(removeIndex, 1);
 
     await post.save();

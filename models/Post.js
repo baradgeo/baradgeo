@@ -19,6 +19,10 @@ const PostSchema = new Schema({
     required: true,
     unique: true,
   },
+  category: {
+    type: String,
+    default: 'Uncategorised',
+  },
 
   description: {
     type: String,
@@ -27,12 +31,6 @@ const PostSchema = new Schema({
   body: {
     type: String,
     required: true,
-  },
-  name: {
-    type: String,
-  },
-  avatar: {
-    type: String,
   },
   comments: [
     {
