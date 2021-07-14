@@ -36,7 +36,7 @@ router.post(
         user: req.user.id,
       });
 
-      //See if post slug exists
+      //See if category name exists
       let categoryName = await Category.findOne({ name: newCategory.name });
 
       if (categoryName) {

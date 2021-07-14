@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { authUser } = require('../../middleware/auth');
+const { authGuest } = require('../../middleware/auth');
 const bcrypt = require('bcryptjs');
 const User = require('../../models/User');
 const jwt = require('jsonwebtoken');
@@ -11,7 +11,7 @@ const { check, validationResult } = require('express-validator');
 // @desc Get Logged in user details
 // @access Logged in User Auth
 
-router.get('/', authUser, async (req, res) => {
+router.get('/', authGuest, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
     res.json(user);

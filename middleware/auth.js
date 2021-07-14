@@ -27,6 +27,7 @@ const authGuest = async (req, res, next) => {
     if (user.role !== 'Guest' && user.role !== 'User' && user.role !== 'Admin') {
       return res.status(401).json({ msg: 'Authorization denied, Contact Adminstration' });
     }
+
     next();
   } catch (err) {
     res.status(401).json({ msg: 'Cannot Verify User Role' });
@@ -41,6 +42,7 @@ const authUser = async (req, res, next) => {
     if (user.role !== 'User' && user.role !== 'Admin') {
       return res.status(401).json({ msg: 'Authorization denied, Contact Adminstration' });
     }
+
     next();
   } catch (err) {
     res.status(401).json({ msg: 'Cannot Verify User Role' });
@@ -56,6 +58,7 @@ const authAdmin = async (req, res, next) => {
     if (user.role !== 'Admin') {
       return res.status(401).json({ msg: 'Authorization denied, Contact Adminstration' });
     }
+
     next();
   } catch (err) {
     res.status(401).json({ msg: 'Cannot Verify User Role' });
